@@ -1,0 +1,52 @@
+CHALLENGE 20 - HIDDEN TOY STORY
+STEPS
+
+Code - c20.py
+
+    1. Search for starting point (more or less by hand, with help of some prints)
+    
+    2. Follow line by getting next pixel with a metrix smaller than 30 (arbitrary)
+    
+    3. Get LSB of r,g,b and concatenate for each pixel in the line
+    
+    4. Decode using https://gchq.github.io/CyberChef/
+       We find that the output contains a message, including a link to a new image
+       
+    5. Surpisingly, the same code seems to work for the color-line image
+    
+    6. Decode again with the same website. 
+       Remove the initial "size_in_bytes" line (not sure if this is necessary).
+       
+    7. Convert remaining binary data to hex. Reverse hexdump
+            $ xxd -r -p output2.hex output2
+            
+    8. Check the new created file
+            $ file output2
+       Reveals that it is gzip compressed data
+            $ mv output2 output2.gz
+            
+    9. Decompress with "gunzip".
+       Resulting file contains another message, with yet another link to a new tablet.
+       
+    10. Now the path crosses itself (i.e. bridges). 
+        Modify the program to support that. In bridges just go straight.
+        Store pixel only the first time the bridge is crossed.
+        Get data as before, and write in hex.
+        
+Code - c20bis.py
+        
+    11. Recall the video linked in the output of the 1st tablet.
+        The data can be decoded using the method explained in the video.
+        Explanation starts around minute 15:00.
+
+    12. After some playing with the numbers and trying to generate the window by hand,
+        you reach the conclusion that the two non-ascii character blocks are interpreted
+        as follows:
+            > 2 bytes: AB CD
+            > D = length (added to the 3 bytes by default)
+            > CAB = position (in 2s complement, with 12 bits)
+              The position marks the last element of the default prefix
+              Position 0 is the ">" character of the second line
+              
+    13. Simply run the code to obtain the message. 
+        Calculate it's sha256 to get the required output.    
